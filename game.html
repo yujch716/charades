@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게임 중</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            padding: 20px;
+            font-size: 32px;
+        }
+        #timer {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        #word {
+            font-size: 10vw;
+            margin: auto;
+        }
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+        button {
+            font-size: 20px;
+            padding: 16px 24px;
+            flex: 1;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div id="timer">03:00</div>
+    <div>정답 수: <span id="score">0</span></div>
+</div>
+
+<div id="word">단어</div>
+
+<div class="button-row">
+    <button onclick="passWord()">패스</button>
+    <button onclick="correctAnswer()">정답!</button>
+</div>
+
+<audio id="end-sound">
+    <source src="success.mp3" type="audio/mpeg">
+</audio>
+
+<script type="module">
+  import { WORD_CATEGORIES } from './data/words.js';
+
+  const selectedCategory = localStorage.getItem('selectedCategory');
+  const words = WORD_CATEGORIES[selectedCategory] || ["단어 없음"];
+
+  let index = 0;
+  let score = 0;
+  let correctList = [];
+  let timeLeft = 180;
+  let timer;
+
+  // 전역 함수로 붙이기 (인라인 onclick용)
+  window.showWord = function() {
+    document.getElementById('word').textContent = words[index % words.length];
+  };
+
+  window.passWord = function() {
+    index++;
+    window.showWord();
+  };
+
+  window.correctAnswer = function() {
+    correctList.push(words[index % words.length]);
+    score++;
+    document.getElementById('score').textContent = score;
+    window.passWord();
+  };
+
+  function startTimer() {
+    timer = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        endGame();
+        return;
+      }
+      timeLeft--;
+      const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${m}:${s}`;
+    }, 1000);
+  }
+
+  function endGame() {
+    document.getElementById('end-sound').play();
+    localStorage.setItem('score', score);
+    localStorage.setItem('correctList', JSON.stringify(correctList));
+    location.href = 'result.html';
+  }
+
+  window.onload = () => {
+    if (!selectedCategory) {
+      alert("카테고리를 선택하고 게임을 시작하세요.");
+      location.href = "index.html";
+      return;
+    }
+    window.showWord();
+    startTimer();
+  };
+</script>
+
+</body>
+</html>
+
+
+

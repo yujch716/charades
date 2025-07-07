@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게임 결과</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        body {
+            background-color: aquamarine;
+        }
+        #correct-words {
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-line;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 20px;
+            font-size: 20px;
+            padding: 12px 24px;
+        }
+    </style>
+</head>
+<body>
+<h1>⏰ 게임 종료!</h1>
+<p>총 정답 수: <span id="final-score">0</span>개</p>
+<div id="correct-words"></div>
+<button onclick="location.href='index.html'">다시 시작</button>
+
+<script>
+  const score = localStorage.getItem('score');
+  const correctList = JSON.parse(localStorage.getItem('correctList') || '[]');
+
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('correct-words').textContent = correctList.join('\n');
+</script>
+</body>
+</html>
